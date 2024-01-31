@@ -2,11 +2,11 @@ const express = require('express')
 const productsRouter = require('./routes/products')
 const cartsRouter = require('./routes/carts')
 const Handlebars = require('express-handlebars')
-const http = require('http')
 const { Server } = require('socket.io')
 const PORT = 8080
-const mongoose = require('mongoose')
 const chatRouter = require('./routes/chat')
+const { connectDB } = require('./config/connectDB')
+const { uploader } = require('./utils')
 
 
 const app = express()
@@ -17,15 +17,15 @@ app.use(express.static('public'))
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/chat', chatRouter);
-
-mongoose.connect('mongodb+srv://emigreif:ruso1545@cluster0.hddv6eb.mongodb.net/ecommerce?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+connectDB()
 
 app.engine('handlebars', Handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
+app.post('/file', uploader.single('myFile'), (req, res) => {
+    console.log('File uploaded')
+    res.send('File uploaded');
+})
 
 const httpServer = app.listen(PORT, () => {
     console.log("listening on  8080")

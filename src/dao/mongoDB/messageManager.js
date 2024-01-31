@@ -1,4 +1,4 @@
-const MessageModel = require('../models/messageModel')
+const MessageModel = require('../../models/messageModel')
 
 class MessageManager {
   async saveMessage(user, message) {

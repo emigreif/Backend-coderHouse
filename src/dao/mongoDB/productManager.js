@@ -1,24 +1,41 @@
-const ProductModel = require('../../models/productModel');
-
+const ProductModel = require('../../models/productModel')
 class ProductManager {
   async getProducts() {
-    return await ProductModel.find()
+    return ProductModel.find()
   }
 
   async getProductById(id) {
-    return await ProductModel.findById(id)
+    return ProductModel.findOne({ id: id })
   }
 
   async addProduct(product) {
-    return await ProductModel.create(product)
+    const newProduct = new ProductModel({
+      id: await this.generateProductId(),
+      ...product,
+    })
+
+    await newProduct.save()
+    return newProduct.toObject()
   }
 
   async updateProduct(id, updatedFields) {
-    return await ProductModel.findByIdAndUpdate(id, updatedFields, { new: true })
+    const updatedProduct = await ProductModel.findOneAndUpdate(
+      { id: id },
+      { $set: updatedFields },
+      { new: true }
+    )
+
+    return updatedProduct ? updatedProduct.toObject() : null
   }
 
   async deleteProduct(id) {
-    return await ProductModel.findByIdAndDelete(id)
+    const deletedProduct = await ProductModel.findOneAndDelete({ id: id })
+    return deletedProduct ? deletedProduct.toObject() : null
+  }
+
+  async generateProductId() {
+    const lastProduct = await ProductModel.findOne().sort({ id: -1 })
+    return lastProduct ? lastProduct.id + 1 : 1
   }
 }
 

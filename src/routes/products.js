@@ -4,77 +4,95 @@ const router = express.Router()
 
 
 router.get('/', async (req, res) => {
-    try {
-        res.send('estas en products')
-        const limit = parseInt(req.query.limit, 10)
-        const products = await ProductManager.getProducts()
-
-        if (!isNaN(limit)) {
-            res.json(products.slice(0, limit))
-        } else {
-            res.json(products)
-        }
-    } catch (error) {
-        console.error('Error:', error)
+  try {
+    const { page = 1, limit = 10 } = req.query
+    const options = {
+      page: parseInt(page),
+      limit: parseInt(limit),
     }
+
+    const products = await ProductManager.getProductsPaginated(options)
+
+    res.json({
+      status: 'success',
+      payload: {
+        products: products.docs,
+        totalPages: products.totalPages,
+        currentPage: products.page,
+      },
+    })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
 })
 
 router.post('/', async (req, res) => {
-    try {
-        const newProduct = req.body
-        const addedProduct = await ProductManager.addProduct(newProduct)
-        res.json(addedProduct)
-    } catch (error) {
-        console.error('Error:', error)
-    }
-})
-router.get('/:pid', async (req, res) => {
-    try {
-        const productId = parseInt(req.params.pid, 10)
-        const product = await ProductManager.getProductById(productId)
+  try {
+    let productsToAdd = req.body
 
-        if (product) {
-            res.json(product)
-        } else {
-        }
-    } catch (error) {
-        console.error('Error:', error)
+    if (!Array.isArray(productsToAdd)) {
+      productsToAdd = [productsToAdd]
     }
+
+    const addedProducts = await Promise.all(productsToAdd.map(async (product) => {
+      return await ProductManager.addProduct(product)
+    }))
+
+    res.json(addedProducts)
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
+router.get('/:pid', async (req, res) => {
+  try {
+    const productId = parseInt(req.params.pid, 10)
+    const product = await ProductManager.getProductById(productId)
+
+    if (product) {
+      res.json(product)
+    } else {
+    }
+  } catch (error) {
+    console.error('Error:', error)
+  }
 })
 
 router.put('/:pid', async (req, res) => {
-    try {
-        const productId = parseInt(req.params.pid, 10)
-        const updatedProduct = req.body
-        const product = await ProductManager.updateProduct(productId, updatedProduct)
+  try {
+    const productId = parseInt(req.params.pid, 10)
+    const updatedProduct = req.body
+    const product = await ProductManager.updateProduct(productId, updatedProduct)
 
-        if (product) {
-        }
-    } catch (error) {
-        console.error('Error:', error)
+    if (product) {
     }
+  } catch (error) {
+    console.error('Error:', error)
+  }
 })
 
 router.delete('/:pid', async (req, res) => {
-    try {
-        const productId = parseInt(req.params.pid, 10)
-        const deletedProduct = await ProductManager.deleteProduct(productId)
-        if (deletedProduct) {
-            res.json(deletedProduct)
-        }
-    } catch (error) {
-        console.error('Error:', error)
+  try {
+    const productId = parseInt(req.params.pid, 10)
+    const deletedProduct = await ProductManager.deleteProduct(productId)
+    if (deletedProduct) {
+      res.json(deletedProduct)
     }
+  } catch (error) {
+    console.error('Error:', error)
+  }
 })
 router.get('/realtimeproducts', async (req, res) => {
-    try {
-      const products = await ProductManager.getProducts()
-      res.render('realTimeProducts', { products })
-    } catch (error) {
-      console.error('Error:', error)
-     }
-  });
+  try {
+    const products = await ProductManager.getProducts()
+    res.render('realTimeProducts', { products })
+  } catch (error) {
+    console.error('Error:', error)
+  }
+})
 
 
-  
+
 module.exports = router

@@ -1,7 +1,29 @@
 const ProductModel = require('../../models/productModel')
+const mongoosePaginate = require('mongoose-paginate-v2')
+
+
 class ProductManager {
   async getProducts() {
     return ProductModel.find()
+  }
+
+  async getProductsPaginated(page = 1, limit = 10, sort = null, query = null) {
+    const options = {
+      page,
+      limit,
+      sort,
+    }
+
+    if (query) {
+      options.customLabels = {
+        totalDocs: 'totalProducts',
+        docs: 'products',
+      }
+
+      return ProductModel.paginate(query, options)
+    }
+
+    return ProductModel.paginate({}, options)
   }
 
   async getProductById(id) {
@@ -10,10 +32,10 @@ class ProductManager {
 
   async addProduct(product) {
     const newProduct = new ProductModel({
-      id: await this.generateProductId(),
+      id: !isNaN(product.id) ? product.id : await this.generateProductId(),
       ...product,
     })
-
+  
     await newProduct.save()
     return newProduct.toObject()
   }
@@ -39,4 +61,4 @@ class ProductManager {
   }
 }
 
-module.exports = ProductManager
+module.exports = new ProductManager()

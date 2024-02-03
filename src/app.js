@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
-app.use('/chat', chatRouter);
+app.use('/chat', chatRouter)
 connectDB()
 
 app.engine('handlebars', Handlebars.engine())
@@ -24,16 +24,16 @@ app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 app.post('/file', uploader.single('myFile'), (req, res) => {
     console.log('File uploaded')
-    res.send('File uploaded');
+    res.send('File uploaded')
 })
 
 const httpServer = app.listen(PORT, () => {
     console.log("listening on  8080")
 })
 
-const io = new Server(httpServer);
+const io = new Server(httpServer)
 
-app.set('io', io);
+app.set('io', io)
 
 app.get('/', (req, res) => {
     res.render('index', {})

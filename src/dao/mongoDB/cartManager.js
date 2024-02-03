@@ -44,4 +44,4 @@ class CartManager {
   }
 }
 
-module.exports = CartManager
+module.exports = new CartManager()

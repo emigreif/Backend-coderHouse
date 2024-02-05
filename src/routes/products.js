@@ -54,6 +54,8 @@ router.get('/:pid', async (req, res) => {
     if (product) {
       res.json(product)
     } else {
+      return res.status(404).send('Product not found')
+      
     }
   } catch (error) {
     console.error('Error:', error)

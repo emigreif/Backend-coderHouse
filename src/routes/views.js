@@ -14,10 +14,6 @@ router.get('/register', isNotLoggedIn, (req, res) => {
     res.render('register')
 });
 
-router.get('/profile', isLoggedIn, (req, res) => {
-    res.render('profile', { user: req.session.user })
-});
-
 router.get('/products', isLoggedIn, (req, res) => {
     res.render('products', { user: req.session.user })
 });

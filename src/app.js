@@ -1,13 +1,13 @@
 const express = require('express')
 const productsRouter = require('./routes/products')
 const cartsRouter = require('./routes/carts')
+const chatRouter = require('./routes/chat')
+const sessionsRouter = require('./routes/sessions')
 const Handlebars = require('express-handlebars')
 const { Server } = require('socket.io')
-const PORT = 8080
-const chatRouter = require('./routes/chat')
-const indexRouter = require('./routes/views')
 const { connectDB } = require('./config/connectDB')
-const { uploader } = require('./utils')
+const { uploader } = require('./utils/uploader')
+const PORT = 8080
 
 
 const app = express()
@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use('/api/products', productsRouter)
-app.use('/', indexRouter)
+app.use('/', sessionsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/chat', chatRouter)
 connectDB()

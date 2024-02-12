@@ -16,7 +16,7 @@ router.post('/send', async (req, res) => {
   try {
     const { user, message } = req.body
     const newMessage = await MessageManager.saveMessage(user, message)
-    res.json(newMessage)
+    res.redirect('/chat') 
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ error: 'Internal Server Error' })

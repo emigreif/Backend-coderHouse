@@ -5,6 +5,7 @@ const Handlebars = require('express-handlebars')
 const { Server } = require('socket.io')
 const PORT = 8080
 const chatRouter = require('./routes/chat')
+const indexRouter = require('./routes/views')
 const { connectDB } = require('./config/connectDB')
 const { uploader } = require('./utils')
 
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use('/api/products', productsRouter)
+app.use('/', indexRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/chat', chatRouter)
 connectDB()
@@ -35,7 +37,4 @@ const io = new Server(httpServer)
 
 app.set('io', io)
 
-app.get('/', (req, res) => {
-    res.render('index', {})
 
-})

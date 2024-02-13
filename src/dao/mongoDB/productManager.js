@@ -1,9 +1,9 @@
-const ProductModel = require('../../models/productModel');
+const ProductModel = require('../../models/productModel')
 
 
 class ProductManager {
   async getProducts() {
-    return ProductModel.find();
+    return ProductModel.find()
   }
 
   async getProductsPaginated(page = 1, limit = 10, sort = null, query = null) {
@@ -11,32 +11,32 @@ class ProductManager {
       page,
       limit,
       sort,
-    };
+    }
 
     if (query) {
       options.customLabels = {
         totalDocs: 'totalProducts',
         docs: 'products',
-      };
+      }
 
-      return ProductModel.paginate(query, options);
+      return ProductModel.paginate(query, options)
     }
 
-    return ProductModel.paginate({}, options);
+    return ProductModel.paginate({}, options)
   }
 
   async getProductById(id) {
-    return ProductModel.findOne({ id: id });
+    return ProductModel.findOne({ id: id })
   }
 
   async addProduct(product) {
     const newProduct = new ProductModel({
       id: !isNaN(product.id) ? product.id : await this.generateProductId(),
       ...product,
-    });
+    })
   
-    await newProduct.save();
-    return newProduct.toObject();
+    await newProduct.save()
+    return newProduct.toObject()
   }
 
   async updateProduct(id, updatedFields) {
@@ -44,22 +44,22 @@ class ProductManager {
       { id: id },
       { $set: updatedFields },
       { new: true }
-    );
+    )
 
-    return updatedProduct ? updatedProduct.toObject() : null;
+    return updatedProduct ? updatedProduct.toObject() : null
   }
 
   async deleteProduct(id) {
-    const deletedProduct = await ProductModel.findOneAndDelete({ id: id });
-    return deletedProduct ? deletedProduct.toObject() : null;
+    const deletedProduct = await ProductModel.findOneAndDelete({ id: id })
+    return deletedProduct ? deletedProduct.toObject() : null
   }
 
   async generateProductId() {
-    const lastProduct = await ProductModel.findOne().sort({ id: -1 });
-    return lastProduct ? lastProduct.id + 1 : 1;
+    const lastProduct = await ProductModel.findOne().sort({ id: -1 })
+    return lastProduct ? lastProduct.id + 1 : 1
   }
 }
 
 
 
-module.exports = new ProductManager();
+module.exports = new ProductManager()

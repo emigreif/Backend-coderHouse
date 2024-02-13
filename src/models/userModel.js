@@ -44,6 +44,9 @@ userSchema.pre('save', async function (next) {
         return next(error)
     }
 })
+userSchema.statics.findByEmail = async function(email) {
+    return this.findOne({ email })
+}
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
     try {

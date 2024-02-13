@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema({
   category: String,
 })
 
-productSchema.plugin(mongoosePaginate);
+productSchema.plugin(mongoosePaginate)
 
-const ProductModel = mongoose.model('Product', productSchema);
-module.exports = ProductModel;
+const ProductModel = mongoose.model('Product', productSchema)
+module.exports = ProductModel

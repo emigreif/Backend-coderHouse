@@ -7,6 +7,9 @@ const Handlebars = require('express-handlebars')
 const { Server } = require('socket.io')
 const { connectDB } = require('./config/connectDB')
 const { uploader } = require('./utils/uploader')
+const passport =require ('passport')
+const initializePassport=require('./config/passport.config') 
+const session=require ('express-session')
 const PORT = 8080
 
 
@@ -20,6 +23,11 @@ app.use('/', sessionsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/chat', chatRouter)
 connectDB()
+initializePassport()
+app.use(session({
+secret:"coderSecrets"
+}))
+app.use(passport.session())
 
 app.engine('handlebars', Handlebars.engine())
 app.set('views', __dirname + '/views')

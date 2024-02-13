@@ -14,7 +14,9 @@ const PORT = 8080
 
 
 const app = express()
-
+app.use(session({
+    secret:"coderSecrets"
+    }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
@@ -24,9 +26,7 @@ app.use('/api/carts', cartsRouter)
 app.use('/chat', chatRouter)
 connectDB()
 initializePassport()
-app.use(session({
-secret:"coderSecrets"
-}))
+
 app.use(passport.session())
 app.engine('handlebars', Handlebars.engine())
 app.set('views', __dirname + '/views')

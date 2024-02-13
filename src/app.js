@@ -28,7 +28,6 @@ app.use(session({
 secret:"coderSecrets"
 }))
 app.use(passport.session())
-
 app.engine('handlebars', Handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')

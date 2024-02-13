@@ -1,16 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const { registerUser, authenticateUser } = require('../dao/mongoDB/sessionManager')
+const passport = require('passport')
 
 router.get('/login', (req, res) => {
   res.render('login')
 })
-
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
-    const user = await authenticateUser({ email, password })
-
+    const user = await authenticateUser(email, password) 
     if (user) {
       req.session.user = user
       res.redirect('/products')
@@ -26,6 +25,11 @@ router.post('/login', async (req, res) => {
 router.get('/register', (req, res) => {
   res.render('register')
 })
+router.get('/github', passport.authenticate('github'));
+router.get('/github/callback', passport.authenticate('github', {
+  successRedirect: '/products',
+  failureRedirect: '/login', 
+}));
 
 router.post('/register', async (req, res) => {
     try {

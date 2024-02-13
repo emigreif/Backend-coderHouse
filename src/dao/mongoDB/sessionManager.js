@@ -1,41 +1,46 @@
-const UserModel = require('../../models/userModel')
-const bcrypt = require('bcrypt')
-const passport = require('passport')
+const UserModel = require('../../models/userModel');
 
 async function registerUser(userData) {
     try {
-        const { email, password } = userData
+        const { email } = userData;
 
-        const existingUser = await UserModel.findByEmail(email)
+        const existingUser = await UserModel.findByEmail(email);
         if (existingUser) {
-            throw new Error('El usuario ya está registrado')
+            throw new Error('El usuario ya está registrado');
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const newUser = new UserModel({ ...userData, password: hashedPassword })
-        await newUser.save()
+        const newUser = new UserModel(userData);
+        await newUser.save();
 
-        return newUser.toObject()
+        return newUser.toObject();
     } catch (error) {
-        throw error
+        throw error;
     }
 }
 
-async function authenticateUser(email, password) {
-    return new Promise((resolve, reject) => {
-        passport.authenticate('local', (err, user, info) => {
-            if (err) {
-                return reject(err)
-            }
-            if (!user) {
-                return reject(new Error(info.message))
-            }
-            return resolve(user.toObject())
-        })({ body: { email, password } })
-    })
+async function findOrCreateUser(profile) {
+    try {
+        const { id, displayName, emails } = profile;
+        const email = emails[0].value;
+
+        let user = await UserModel.findOne({ email });
+
+        if (!user) {
+            user = new UserModel({
+                githubId: id,
+                email,
+                displayName
+            });
+            await user.save();
+        }
+
+        return user.toObject();
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {
     registerUser,
-    authenticateUser,
-}
+    findOrCreateUser,
+};

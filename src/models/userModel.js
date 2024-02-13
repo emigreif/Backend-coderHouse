@@ -16,10 +16,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
     },
-    age: {
-        type: Number,
-        required: true,
-    },
+
     password: {
         type: String,
         required: true,
@@ -51,6 +48,26 @@ userSchema.statics.findByEmail = async function(email) {
 userSchema.methods.comparePassword = async function (candidatePassword) {
     try {
         return await bcrypt.compare(candidatePassword, this.password)
+    } catch (error) {
+        throw error
+    }
+}
+userSchema.statics.findOrCreateUser = async function(profile) {
+    try {
+        let user = await this.findOne({ email: profile.email })
+
+        
+        if (!user) {
+            user = new this({
+                email: profile.email,
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+              
+            })
+            await user.save();
+        }
+
+        return user
     } catch (error) {
         throw error
     }
